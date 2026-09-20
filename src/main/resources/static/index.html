@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Raj Mart</title>
+
+    <link rel="stylesheet" href="/style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="top-header">
+
+    <div class="brand">
+
+        <a href="/index.html">
+
+            <span class="brand-main">
+                RAJ
+            </span>
+
+            <span class="brand-sub">
+                MART
+            </span>
+
+        </a>
+
+    </div>
+
+
+    <nav class="main-nav">
+
+        <a
+            href="/index.html"
+            class="active"
+        >
+            Home
+        </a>
+
+        <a
+            href="/products.html"
+            onclick="goToProducts(event)"
+        >
+            Products
+        </a>
+
+        <a
+            href="/orders.html"
+            onclick="goToOrders(event)"
+        >
+            Orders
+        </a>
+
+        <a href="/cart.html">
+
+            Cart
+
+            <span
+                id="cartCount"
+                class="cart-count"
+            >
+                0
+            </span>
+
+        </a>
+
+    </nav>
+
+
+    <div
+        id="userSection"
+        class="user-section"
+    >
+
+        <a
+            href="/login.html"
+            class="login-btn"
+        >
+            Login
+        </a>
+
+        <a
+            href="/register.html"
+            class="register-btn"
+        >
+            Register
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<main>
+
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <span class="hero-badge">
+            SMART SHOPPING EXPERIENCE
+        </span>
+
+
+        <h1>
+
+            Shop Smarter.<br>
+
+            Live Better.
+
+        </h1>
+
+
+        <p>
+
+            Discover quality products, manage your cart,
+            place orders and track your purchases — all in one place.
+
+        </p>
+
+
+        <div class="hero-actions">
+
+
+            <!-- SHOP NOW -> LOGIN -->
+
+            <a
+                href="/login.html"
+                class="primary-btn"
+                onclick="shopNow(event)"
+            >
+                Shop Now
+            </a>
+
+
+            <!-- EXPLORE PRODUCTS -> LOGIN -->
+
+            <a
+                href="/login.html"
+                class="secondary-btn"
+                onclick="shopNow(event)"
+            >
+                Explore Products
+            </a>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+
+<footer class="footer">
+
+    <div class="footer-brand">
+
+        <strong>
+            RAJ MART
+        </strong>
+
+        <span>
+            Smart • Simple • Shopping
+        </span>
+
+    </div>
+
+
+    <div class="footer-links">
+
+        <a href="/index.html">
+            Home
+        </a>
+
+        <a
+            href="/products.html"
+            onclick="goToProducts(event)"
+        >
+            Products
+        </a>
+
+        <a
+            href="/orders.html"
+            onclick="goToOrders(event)"
+        >
+            Orders
+        </a>
+
+        <a href="/cart.html">
+            Cart
+        </a>
+
+    </div>
+
+
+    <p>
+        © 2026 Raj Mart. All rights reserved.
+    </p>
+
+</footer>
+
+
+
+<script>
+
+
+/* =====================================================
+   CHECK LOGIN
+   ===================================================== */
+
+function isLoggedIn() {
+
+    const email =
+        localStorage.getItem("userEmail");
+
+    const role =
+        localStorage.getItem("userRole");
+
+    return !!(email && role);
+
+}
+
+
+/* =====================================================
+   SHOP NOW
+   ===================================================== */
+
+function shopNow(event) {
+
+    event.preventDefault();
+
+    window.location.href =
+        "/login.html";
+
+}
+
+
+/* =====================================================
+   PRODUCTS NAVIGATION
+   ===================================================== */
+
+function goToProducts(event) {
+
+    if (!isLoggedIn()) {
+
+        event.preventDefault();
+
+        window.location.href =
+            "/login.html";
+
+    }
+
+}
+
+
+/* =====================================================
+   ORDERS NAVIGATION
+   ===================================================== */
+
+function goToOrders(event) {
+
+    if (!isLoggedIn()) {
+
+        event.preventDefault();
+
+        window.location.href =
+            "/login.html";
+
+    }
+
+}
+
+
+/* =====================================================
+   CART COUNT
+   ===================================================== */
+
+function updateCartCount() {
+
+    try {
+
+        const cart =
+            JSON.parse(
+                localStorage.getItem("cart") || "[]"
+            );
+
+
+        const count =
+            cart.reduce(
+                function(total, item) {
+
+                    return total +
+                        Number(item.quantity || 0);
+
+                },
+                0
+            );
+
+
+        const cartCount =
+            document.getElementById("cartCount");
+
+
+        if (cartCount) {
+
+            cartCount.textContent =
+                count;
+
+        }
+
+    } catch (error) {
+
+        console.log(
+            "Cart count error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   USER SECTION
+   ===================================================== */
+
+function updateUserSection() {
+
+    const section =
+        document.getElementById(
+            "userSection"
+        );
+
+
+    if (!section) {
+        return;
+    }
+
+
+    const email =
+        localStorage.getItem("userEmail");
+
+
+    const name =
+        localStorage.getItem("userName");
+
+
+    const role =
+        localStorage.getItem("userRole");
+
+
+    if (email && role) {
+
+        const displayName =
+            name ||
+            email.split("@")[0];
+
+
+        section.innerHTML = `
+
+            <div class="welcome-user">
+
+                <span>
+                    Hello, ${displayName}
+                </span>
+
+                <small>
+                    ${role}
+                </small>
+
+            </div>
+
+
+            <button
+                class="logout-btn"
+                onclick="logoutUser()"
+            >
+                Logout
+            </button>
+
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   LOGOUT
+   ===================================================== */
+
+function logoutUser() {
+
+    localStorage.removeItem(
+        "userEmail"
+    );
+
+    localStorage.removeItem(
+        "userName"
+    );
+
+    localStorage.removeItem(
+        "userRole"
+    );
+
+
+    window.location.href =
+        "/index.html";
+
+}
+
+
+/* =====================================================
+   INITIALIZE
+   ===================================================== */
+
+updateCartCount();
+
+updateUserSection();
+
+
+</script>
+
+
+<script src="/ai-chat.js"></script>
+</body>
+
+</html>
+
+

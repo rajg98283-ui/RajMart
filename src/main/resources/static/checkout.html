@@ -1,0 +1,810 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RajMart - Checkout</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f6fa;
+            color: #222;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 35px auto;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 25px;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .box h2 {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .payment {
+            margin-top: 20px;
+        }
+
+        .payment-option {
+            border: 1px solid #ddd;
+            padding: 13px;
+            margin-top: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .payment-option input {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 14px 0;
+        }
+
+        .total {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .place-btn {
+            width: 100%;
+            margin-top: 25px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #16a34a;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .place-btn:hover {
+            background: #15803d;
+        }
+
+        .place-btn:disabled {
+            background: #888;
+            cursor: not-allowed;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+        }
+
+        @media (max-width: 800px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>RajMart</h1>
+
+    <div>
+        <a href="/products.html">Products</a>
+        <a href="/cart.html">Cart</a>
+    </div>
+</header>
+
+
+<div class="container">
+
+    <!-- CUSTOMER DETAILS -->
+
+    <div class="box">
+
+        <h2>Delivery Details</h2>
+
+        <label for="name">Full Name</label>
+
+        <input
+                type="text"
+                id="name"
+                placeholder="Enter your name"
+        >
+
+
+        <label for="email">Email</label>
+
+        <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+        >
+
+
+        <label for="address">Delivery Address</label>
+
+        <textarea
+                id="address"
+                placeholder="Enter your complete delivery address"
+        ></textarea>
+
+
+        <div class="payment">
+
+            <h2>Payment Method</h2>
+
+            <label class="payment-option">
+                <input
+                        type="radio"
+                        name="payment"
+                        value="COD"
+                        checked
+                >
+                Cash on Delivery
+            </label>
+
+
+            <label class="payment-option">
+                <input
+                        type="radio"
+                        name="payment"
+                        value="UPI"
+                >
+                UPI
+            </label>
+
+
+            <label class="payment-option">
+                <input
+                        type="radio"
+                        name="payment"
+                        value="CARD"
+                >
+                Debit / Credit Card
+            </label>
+
+        </div>
+
+    </div>
+
+
+    <!-- ORDER SUMMARY -->
+
+    <div class="box">
+
+        <h2>Order Summary</h2>
+
+        <div id="cartItems"></div>
+
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="subtotal">₹0.00</span>
+        </div>
+
+        <div class="summary-row">
+            <span>Delivery</span>
+            <span id="delivery">₹50.00</span>
+        </div>
+
+        <div class="summary-row">
+            <span>Service Charge</span>
+            <span id="service">₹10.00</span>
+        </div>
+
+        <div class="summary-row total">
+            <span>Total</span>
+            <span id="total">₹0.00</span>
+        </div>
+
+
+        <button
+                type="button"
+                class="place-btn"
+                id="placeOrderBtn"
+        >
+            Place Order
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const DELIVERY_CHARGE = 50;
+    const SERVICE_CHARGE = 10;
+
+
+    // -------------------------------
+    // GET CART
+    // -------------------------------
+
+    function getCart() {
+
+        try {
+
+            return JSON.parse(
+                localStorage.getItem("cart")
+            ) || [];
+
+        } catch (error) {
+
+            console.error(
+                "Cart read error:",
+                error
+            );
+
+            return [];
+        }
+    }
+
+
+    // -------------------------------
+    // LOAD USER
+    // -------------------------------
+
+    function loadUser() {
+
+        const savedName =
+            localStorage.getItem("userName");
+
+        const savedEmail =
+            localStorage.getItem("userEmail");
+
+
+        if (savedName) {
+
+            document.getElementById("name").value =
+                savedName;
+        }
+
+
+        if (savedEmail) {
+
+            document.getElementById("email").value =
+                savedEmail;
+        }
+    }
+
+
+    // -------------------------------
+    // DISPLAY CART
+    // -------------------------------
+
+    function displayCart() {
+
+        const cart = getCart();
+
+        const cartItems =
+            document.getElementById("cartItems");
+
+        if (cart.length === 0) {
+
+            cartItems.innerHTML =
+                '<div class="empty">Your cart is empty.</div>';
+
+            document.getElementById("subtotal")
+                .textContent = "₹0.00";
+
+            document.getElementById("total")
+                .textContent = "₹0.00";
+
+            return;
+        }
+
+
+        let subtotal = 0;
+
+        let html = "";
+
+
+        cart.forEach(function(item) {
+
+            const price =
+                Number(item.price) || 0;
+
+            const quantity =
+                Number(item.quantity) || 1;
+
+            const itemTotal =
+                price * quantity;
+
+            subtotal += itemTotal;
+
+
+            html += `
+                <div class="cart-item">
+
+                    <span>
+                        ${item.name}
+                        × ${quantity}
+                    </span>
+
+                    <strong>
+                        ₹${itemTotal.toFixed(2)}
+                    </strong>
+
+                </div>
+            `;
+        });
+
+
+        cartItems.innerHTML = html;
+
+
+        const grandTotal =
+            subtotal +
+            DELIVERY_CHARGE +
+            SERVICE_CHARGE;
+
+
+        document.getElementById("subtotal")
+            .textContent =
+            "₹" + subtotal.toFixed(2);
+
+
+        document.getElementById("delivery")
+            .textContent =
+            "₹" + DELIVERY_CHARGE.toFixed(2);
+
+
+        document.getElementById("service")
+            .textContent =
+            "₹" + SERVICE_CHARGE.toFixed(2);
+
+
+        document.getElementById("total")
+            .textContent =
+            "₹" + grandTotal.toFixed(2);
+    }
+
+
+    // -------------------------------
+    // GET SELECTED PAYMENT
+    // -------------------------------
+
+    function getPaymentMethod() {
+
+        const selected =
+            document.querySelector(
+                'input[name="payment"]:checked'
+            );
+
+        return selected
+            ? selected.value
+            : "COD";
+    }
+
+
+    // -------------------------------
+    // PLACE ORDER
+    // -------------------------------
+
+    async function placeOrder() {
+
+        console.log(
+            "========== PLACE ORDER CLICKED =========="
+        );
+
+
+        const name =
+            document.getElementById("name")
+                .value
+                .trim();
+
+
+        const email =
+            document.getElementById("email")
+                .value
+                .trim();
+
+
+        const address =
+            document.getElementById("address")
+                .value
+                .trim();
+
+
+        const cart = getCart();
+
+
+        console.log("Name:", name);
+        console.log("Email:", email);
+        console.log("Cart:", cart);
+
+
+        // -------------------------------
+        // VALIDATION
+        // -------------------------------
+
+        if (!name) {
+
+            alert(
+                "Please enter your name."
+            );
+
+            return;
+        }
+
+
+        if (!email) {
+
+            alert(
+                "Please enter your email."
+            );
+
+            return;
+        }
+
+
+        if (!address) {
+
+            alert(
+                "Please enter your delivery address."
+            );
+
+            return;
+        }
+
+
+        if (cart.length === 0) {
+
+            alert(
+                "Your cart is empty."
+            );
+
+            return;
+        }
+
+
+        // -------------------------------
+        // PAYMENT
+        // -------------------------------
+
+        const paymentMethod =
+            getPaymentMethod();
+
+
+        // -------------------------------
+        // CALCULATE TOTAL
+        // -------------------------------
+
+        let subtotal = 0;
+
+
+        const items =
+            cart.map(function(item) {
+
+                const price =
+                    Number(item.price) || 0;
+
+                const quantity =
+                    Number(item.quantity) || 1;
+
+
+                subtotal +=
+                    price * quantity;
+
+
+                return {
+
+                    productId:
+                        Number(item.id),
+
+                    quantity:
+                    quantity,
+
+                    price:
+                    price
+                };
+
+            });
+
+
+        const grandTotal =
+            subtotal +
+            DELIVERY_CHARGE +
+            SERVICE_CHARGE;
+
+
+        // -------------------------------
+        // ORDER DATA
+        // -------------------------------
+
+        const orderData = {
+
+            userEmail: email,
+
+            customerName: name,
+
+            deliveryAddress: address,
+
+            paymentMethod: paymentMethod,
+
+            items: items,
+
+            subtotal: subtotal,
+
+            deliveryCharge:
+            DELIVERY_CHARGE,
+
+            serviceCharge:
+            SERVICE_CHARGE,
+
+            grandTotal: grandTotal
+        };
+
+
+        console.log(
+            "ORDER DATA:",
+            orderData
+        );
+
+
+        const button =
+            document.getElementById(
+                "placeOrderBtn"
+            );
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "Placing Order...";
+
+
+        // -------------------------------
+        // SEND TO BACKEND
+        // -------------------------------
+
+        try {
+
+            console.log(
+                "Sending POST /api/orders..."
+            );
+
+
+            const response =
+                await fetch(
+                    "/api/orders",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                orderData
+                            )
+                    }
+                );
+
+
+            console.log(
+                "Response Status:",
+                response.status
+            );
+
+
+            const responseText =
+                await response.text();
+
+
+            console.log(
+                "Response:",
+                responseText
+            );
+
+
+            if (!response.ok) {
+
+                alert(
+                    "Order failed.\nHTTP Status: " +
+                    response.status +
+                    "\n" +
+                    responseText
+                );
+
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Place Order";
+
+                return;
+            }
+
+
+            // -------------------------------
+            // SUCCESS
+            // -------------------------------
+
+            let result = null;
+
+
+            try {
+
+                result =
+                    JSON.parse(
+                        responseText
+                    );
+
+            } catch (error) {
+
+                console.log(
+                    "Response is not JSON."
+                );
+            }
+
+
+            console.log(
+                "ORDER SUCCESS:",
+                result
+            );
+
+
+            localStorage.removeItem(
+                "cart"
+            );
+
+
+            if (result && result.id) {
+
+                localStorage.setItem(
+                    "lastOrderId",
+                    result.id
+                );
+            }
+
+
+            localStorage.setItem(
+                "lastPaymentMethod",
+                paymentMethod
+            );
+
+
+            localStorage.setItem(
+                "lastOrderTotal",
+                grandTotal.toFixed(2)
+            );
+
+
+            alert(
+                "Order placed successfully!"
+            );
+
+
+            window.location.href =
+                "/order-success.html";
+
+        } catch (error) {
+
+            console.error(
+                "ORDER REQUEST ERROR:",
+                error
+            );
+
+
+            alert(
+                "Unable to connect to the order server.\n\n" +
+                error.message
+            );
+
+
+            button.disabled = false;
+
+            button.textContent =
+                "Place Order";
+        }
+    }
+
+
+    // -------------------------------
+    // BUTTON CLICK
+    // -------------------------------
+
+    document
+        .getElementById("placeOrderBtn")
+        .addEventListener(
+            "click",
+            placeOrder
+        );
+
+
+    // -------------------------------
+    // PAGE LOAD
+    // -------------------------------
+
+    window.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            loadUser();
+
+            displayCart();
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

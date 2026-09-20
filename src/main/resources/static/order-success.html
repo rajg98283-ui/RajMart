@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Raj Mart - Order Success</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f5f7fb;
+}
+header{
+    background:linear-gradient(135deg,#111827,#312e81);
+    color:white;
+    padding:18px 6%;
+}
+.logo{
+    font-size:24px;
+    font-weight:800;
+}
+.container{
+    min-height:80vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+}
+.card{
+    background:white;
+    max-width:650px;
+    width:100%;
+    padding:45px;
+    border-radius:25px;
+    text-align:center;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+}
+.icon{
+    font-size:70px;
+}
+h1{
+    color:#111827;
+}
+.order{
+    background:#f5f7ff;
+    padding:18px;
+    border-radius:12px;
+    margin:25px 0;
+}
+.status{
+    color:#4338ca;
+    font-weight:800;
+}
+.buttons{
+    display:flex;
+    gap:12px;
+}
+button{
+    flex:1;
+    padding:14px;
+    border:0;
+    border-radius:10px;
+    font-weight:800;
+    cursor:pointer;
+}
+.primary{
+    background:#111827;
+    color:white;
+}
+.secondary{
+    background:#eef2ff;
+    color:#4338ca;
+}
+@media(max-width:600px){
+    .buttons{flex-direction:column}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">RAJ MART</div>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="icon">✅</div>
+
+        <h1>Order Successfully Placed!</h1>
+
+        <p>
+            Thank you for shopping with Raj Mart.
+        </p>
+
+        <div class="order">
+
+            <div>
+                Order ID:
+                <strong id="orderId">#---</strong>
+            </div>
+
+            <br>
+
+            <div>
+                Payment:
+                <strong id="payment">---</strong>
+            </div>
+
+            <br>
+
+            <div class="status">
+                Status: PLACED
+            </div>
+
+        </div>
+
+        <p>
+            You can track your order and submit feedback
+            from My Orders.
+        </p>
+
+        <div class="buttons">
+
+            <button class="primary"
+                onclick="location.href='/orders.html'">
+                View My Orders
+            </button>
+
+            <button class="secondary"
+                onclick="location.href='/products.html'">
+                Continue Shopping
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const orderId =
+    localStorage.getItem("lastOrderId");
+
+const payment =
+    localStorage.getItem("lastPaymentMethod");
+
+document.getElementById("orderId").textContent =
+    orderId ? "#" + orderId : "#SUCCESS";
+
+document.getElementById("payment").textContent =
+    payment || "Payment";
+
+</script>
+
+<script src="/ai-chat.js"></script>
+</body>
+</html>
+

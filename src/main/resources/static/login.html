@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Raj Mart - Login</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #1e293b,
+                    #334155
+            );
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow:
+                    0 20px 50px rgba(0, 0, 0, 0.35);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .logo h1 {
+            color: #2563eb;
+            font-size: 32px;
+        }
+
+        .logo p {
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .login-title {
+            text-align: center;
+            margin: 25px 0;
+            color: #1e293b;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #334155;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 9px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .login-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .message {
+            display: none;
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 22px;
+            color: #64748b;
+        }
+
+        .register-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+
+            .login-container {
+                padding: 25px;
+            }
+
+            .logo h1 {
+                font-size: 27px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="login-container">
+
+
+    <div class="logo">
+
+        <h1>
+            Raj Mart
+        </h1>
+
+        <p>
+            Welcome back!
+        </p>
+
+    </div>
+
+
+    <h2 class="login-title">
+        Login
+    </h2>
+
+
+    <form id="loginForm">
+
+
+        <div class="form-group">
+
+            <label for="email">
+                Email
+            </label>
+
+            <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="role">
+                Login As
+            </label>
+
+            <select id="role" required>
+
+                <option value="BUYER">
+                    Buyer
+                </option>
+
+                <option value="SELLER">
+                    Seller
+                </option>
+
+                <option value="ADMIN">
+                    Admin
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <button
+                type="submit"
+                class="login-btn"
+                id="loginBtn"
+        >
+            Login
+        </button>
+
+
+    </form>
+
+
+    <div
+            id="message"
+            class="message"
+    ></div>
+
+
+    <div class="register-link">
+
+        Don't have an account?
+
+        <a href="/register.html">
+            Register
+        </a>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    const loginForm =
+        document.getElementById("loginForm");
+
+
+    const loginBtn =
+        document.getElementById("loginBtn");
+
+
+    const message =
+        document.getElementById("message");
+
+
+    function showMessage(text, type) {
+
+        message.textContent = text;
+
+        message.className =
+            "message " + type;
+
+    }
+
+
+    loginForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            const email =
+                document
+                    .getElementById("email")
+                    .value
+                    .trim();
+
+
+            const password =
+                document
+                    .getElementById("password")
+                    .value;
+
+
+            const role =
+                document
+                    .getElementById("role")
+                    .value;
+
+
+            if (!email || !password) {
+
+                showMessage(
+                    "Please enter email and password.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            loginBtn.disabled = true;
+
+            loginBtn.textContent =
+                "Logging in...";
+
+
+            try {
+
+
+                const response =
+                    await fetch(
+                        "/api/users/login",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                email: email,
+
+                                password: password,
+
+                                role: role
+
+                            })
+
+                        }
+                    );
+
+
+                /*
+                 * Read server response
+                 */
+
+                const responseText =
+                    await response.text();
+
+
+                /*
+                 * SHOW API RESPONSE
+                 * This is temporary debugging.
+                 */
+
+                alert(
+                    "LOGIN SERVER RESPONSE:\n\n" +
+                    responseText
+                );
+
+
+                /*
+                 * Convert response to JSON
+                 */
+
+                let data;
+
+
+                try {
+
+                    data =
+                        JSON.parse(responseText);
+
+                } catch (jsonError) {
+
+                    showMessage(
+                        "Server returned invalid response.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * LOGIN SUCCESS
+                 */
+
+                if (
+                    data.success === true ||
+                    data.success === "true"
+                ) {
+
+
+                    /*
+                     * Save user information
+                     */
+
+                    localStorage.setItem(
+                        "userId",
+                        data.id ?? ""
+                    );
+
+
+                    localStorage.setItem(
+                        "userName",
+                        data.name ?? ""
+                    );
+
+
+                    localStorage.setItem(
+                        "userEmail",
+                        data.email ?? email
+                    );
+
+
+                    localStorage.setItem(
+                        "userRole",
+                        data.role ?? role
+                    );
+
+
+                    /*
+                     * Verify storage
+                     */
+
+                    const savedEmail =
+                        localStorage.getItem(
+                            "userEmail"
+                        );
+
+
+                    const savedRole =
+                        localStorage.getItem(
+                            "userRole"
+                        );
+
+
+                    showMessage(
+                        "Login successful!",
+                        "success"
+                    );
+
+
+                    /*
+                     * Redirect based on role
+                     */
+
+                    setTimeout(
+                        function() {
+
+
+                            if (
+                                savedRole ===
+                                "ADMIN"
+                            ) {
+
+                                window.location.href =
+                                    "/admin.html";
+
+
+                            } else if (
+                                savedRole ===
+                                "SELLER"
+                            ) {
+
+                                window.location.href =
+                                    "/seller.html";
+
+
+                            } else {
+
+                                window.location.href =
+                                    "/index.html";
+
+                            }
+
+                        },
+                        700
+                    );
+
+
+                } else {
+
+
+                    /*
+                     * LOGIN FAILED
+                     */
+
+                    showMessage(
+
+                        data.message ||
+                        "Invalid email, password or role.",
+
+                        "error"
+
+                    );
+
+                }
+
+
+            } catch (error) {
+
+
+                console.error(
+                    "Login error:",
+                    error
+                );
+
+
+                alert(
+                    "LOGIN ERROR:\n\n" +
+                    error.message
+                );
+
+
+                showMessage(
+                    "Unable to connect to server.",
+                    "error"
+                );
+
+
+            } finally {
+
+
+                loginBtn.disabled = false;
+
+                loginBtn.textContent =
+                    "Login";
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>
+

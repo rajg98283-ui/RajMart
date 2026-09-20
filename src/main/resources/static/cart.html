@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    ```
+    <title>Raj Mart - Cart</title>
+
+    <style>
+        *{
+            box-sizing:border-box;
+        }
+
+        body{
+            margin:0;
+            font-family:Arial,Helvetica,sans-serif;
+            background:#f5f7fb;
+            color:#172033;
+        }
+
+        header{
+            background:linear-gradient(135deg,#111827,#312e81);
+            color:white;
+            padding:18px 6%;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        .logo{
+            font-size:24px;
+            font-weight:800;
+        }
+
+        nav a{
+            color:white;
+            text-decoration:none;
+            margin-left:20px;
+        }
+
+        nav a:hover{
+            text-decoration:underline;
+        }
+
+        .container{
+            width:88%;
+            max-width:1150px;
+            margin:35px auto;
+        }
+
+        .layout{
+            display:grid;
+            grid-template-columns:2fr 1fr;
+            gap:25px;
+        }
+
+        .card,
+        .summary{
+            background:white;
+            border-radius:20px;
+            padding:25px;
+            box-shadow:0 8px 25px rgba(0,0,0,.06);
+        }
+
+        .item{
+            display:grid;
+            grid-template-columns:90px 1fr auto;
+            gap:18px;
+            align-items:center;
+            padding:18px 0;
+            border-bottom:1px solid #eee;
+        }
+
+        .item:last-child{
+            border-bottom:none;
+        }
+
+        .item img{
+            width:90px;
+            height:90px;
+            object-fit:cover;
+            border-radius:12px;
+            background:#eee;
+        }
+
+        .name{
+            font-weight:700;
+            font-size:17px;
+        }
+
+        .price{
+            font-weight:700;
+            margin-top:8px;
+        }
+
+        .qty{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            margin-top:10px;
+        }
+
+        .qty button{
+            border:0;
+            background:#eef2ff;
+            padding:7px 11px;
+            border-radius:7px;
+            cursor:pointer;
+            font-size:16px;
+        }
+
+        .qty button:hover{
+            background:#dbe4ff;
+        }
+
+        .remove{
+            border:0;
+            background:#fee2e2;
+            color:#b91c1c;
+            padding:8px 12px;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        .remove:hover{
+            background:#fecaca;
+        }
+
+        .row{
+            display:flex;
+            justify-content:space-between;
+            margin:15px 0;
+        }
+
+        .total{
+            font-size:23px;
+            font-weight:800;
+            border-top:1px solid #ddd;
+            padding-top:18px;
+        }
+
+        .checkout{
+            width:100%;
+            margin-top:20px;
+            border:0;
+            padding:15px;
+            border-radius:10px;
+            background:#111827;
+            color:white;
+            font-weight:800;
+            cursor:pointer;
+        }
+
+        .checkout:hover{
+            background:#312e81;
+        }
+
+        .continue{
+            display:block;
+            width:250px;
+            margin:20px auto 0;
+            text-align:center;
+            text-decoration:none;
+        }
+
+        .empty{
+            text-align:center;
+            padding:60px 20px;
+        }
+
+        @media(max-width:800px){
+
+            .layout{
+                grid-template-columns:1fr;
+            }
+
+            .item{
+                grid-template-columns:70px 1fr;
+            }
+
+            .item img{
+                width:70px;
+                height:70px;
+            }
+
+            .remove{
+                grid-column:2;
+                width:max-content;
+            }
+        }
+    </style>
+    ```
+
+</head>
+
+<body>
+
+<header>
+
+    ```
+    <div class="logo">
+        RAJ MART
+    </div>
+
+    <nav>
+        <a href="/products.html">Products</a>
+        <a href="/orders.html">My Orders</a>
+    </nav>
+    ```
+
+</header>
+
+<div class="container">
+
+    ```
+    <h1>Shopping Cart 🛒</h1>
+
+    <div id="content"></div>
+    ```
+
+</div>
+
+<script>
+
+    function getCart(){
+
+        try{
+
+            const saved =
+                localStorage.getItem("cart");
+
+            if(!saved){
+                return [];
+            }
+
+            const parsed =
+                JSON.parse(saved);
+
+            if(!Array.isArray(parsed)){
+                return [];
+            }
+
+            return parsed
+                .filter(item =>
+                    item &&
+                    item.id !== undefined &&
+                    item.name
+                )
+                .map(item => ({
+
+                    id:Number(item.id),
+
+                    name:String(item.name),
+
+                    price:Number(item.price) || 0,
+
+                    quantity:
+                        Math.max(
+                            1,
+                            Number(item.quantity) || 1
+                        ),
+
+                    image:item.image || "",
+
+                    stock:
+                        item.stock !== undefined
+                            ? Number(item.stock)
+                            : 0
+
+                }));
+
+        }catch(error){
+
+            console.error(
+                "Cart read error:",
+                error
+            );
+
+            return [];
+        }
+    }
+
+
+    function saveCart(cart){
+
+        localStorage.setItem(
+            "cart",
+            JSON.stringify(cart)
+        );
+    }
+
+
+    function render(){
+
+        const cart = getCart();
+
+        const content =
+            document.getElementById("content");
+
+
+        if(cart.length === 0){
+
+            content.innerHTML = `
+
+            <div class="card empty">
+
+                <h2>
+                    Your cart is empty
+                </h2>
+
+                <p>
+                    Add some products to continue.
+                </p>
+
+                <a
+                    class="checkout continue"
+                    href="/products.html">
+
+                    Continue Shopping
+
+                </a>
+
+            </div>
+
+        `;
+
+            return;
+        }
+
+
+        let subtotal = 0;
+
+
+        const items =
+            cart.map((item,index) => {
+
+                const price =
+                    Number(item.price);
+
+                const quantity =
+                    Number(item.quantity);
+
+                const lineTotal =
+                    price * quantity;
+
+                subtotal += lineTotal;
+
+
+                const image =
+                    item.image &&
+                    item.image.trim() !== ""
+
+                        ? item.image
+
+                        : "https://via.placeholder.com/100?text=Product";
+
+
+                return `
+
+                <div class="item">
+
+                    <img
+                        src="${escapeHtml(image)}"
+                        onerror="
+                            this.src=
+                            'https://via.placeholder.com/100?text=Product'
+                        "
+                    >
+
+                    <div>
+
+                        <div class="name">
+                            ${escapeHtml(item.name)}
+                        </div>
+
+                        <div class="price">
+                            ₹${price.toFixed(2)}
+                        </div>
+
+                        <div class="qty">
+
+                            <button
+                                onclick="
+                                changeQty(${index},-1)">
+
+                                −
+
+                            </button>
+
+                            <strong>
+                                ${quantity}
+                            </strong>
+
+                            <button
+                                onclick="
+                                changeQty(${index},1)">
+
+                                +
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="remove"
+                        onclick="
+                        removeItem(${index})">
+
+                        Remove
+
+                    </button>
+
+                </div>
+
+            `;
+
+            }).join("");
+
+
+        const delivery = 50;
+        const service = 10;
+
+        const total =
+            subtotal +
+            delivery +
+            service;
+
+
+        content.innerHTML = `
+
+        <div class="layout">
+
+            <div class="card">
+
+                ${items}
+
+            </div>
+
+            <div class="summary">
+
+                <h2>
+                    Order Summary
+                </h2>
+
+                <div class="row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <strong>
+                        ₹${subtotal.toFixed(2)}
+                    </strong>
+
+                </div>
+
+                <div class="row">
+
+                    <span>
+                        Delivery
+                    </span>
+
+                    <strong>
+                        ₹50.00
+                    </strong>
+
+                </div>
+
+                <div class="row">
+
+                    <span>
+                        Service Charge
+                    </span>
+
+                    <strong>
+                        ₹10.00
+                    </strong>
+
+                </div>
+
+                <div class="row total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <strong>
+                        ₹${total.toFixed(2)}
+                    </strong>
+
+                </div>
+
+                <button
+                    class="checkout"
+                    onclick="goCheckout()">
+
+                    Proceed to Checkout
+
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+    }
+
+
+    function changeQty(index,delta){
+
+        const cart = getCart();
+
+        if(!cart[index]){
+            return;
+        }
+
+        let newQty =
+            Number(cart[index].quantity) +
+            Number(delta);
+
+        if(newQty < 1){
+            newQty = 1;
+        }
+
+        const stock =
+            Number(cart[index].stock);
+
+        if(
+            stock > 0 &&
+            newQty > stock
+        ){
+
+            alert(
+                "Maximum stock available: " +
+                stock
+            );
+
+            return;
+        }
+
+        cart[index].quantity =
+            newQty;
+
+        saveCart(cart);
+
+        render();
+    }
+
+
+    function removeItem(index){
+
+        const cart = getCart();
+
+        if(!cart[index]){
+            return;
+        }
+
+        cart.splice(index,1);
+
+        saveCart(cart);
+
+        render();
+    }
+
+
+    function goCheckout(){
+
+        const cart =
+            getCart();
+
+        if(cart.length === 0){
+
+            alert(
+                "Cart is empty."
+            );
+
+            return;
+        }
+
+        window.location.href =
+            "/checkout.html";
+    }
+
+
+    function escapeHtml(value){
+
+        return String(value ?? "")
+            .replaceAll("&","&amp;")
+            .replaceAll("<","&lt;")
+            .replaceAll(">","&gt;")
+            .replaceAll('"',"&quot;")
+            .replaceAll("'","&#039;");
+    }
+
+
+    render();
+
+</script>
+
+<script src="/ai-chat.js"></script>
+
+</body>
+</html>

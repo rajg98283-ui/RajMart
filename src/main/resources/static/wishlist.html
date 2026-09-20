@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Raj Mart - Wishlist</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 18px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .title h2 {
+            margin: 0;
+        }
+
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+        }
+
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #f8f8f8;
+        }
+
+        .no-image {
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #eee;
+            border-radius: 8px;
+            color: #777;
+        }
+
+        .card h3 {
+            margin: 15px 0 8px;
+        }
+
+        .price {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stock {
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-btn {
+            background: #16a34a;
+            color: white;
+        }
+
+        .remove-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .empty {
+            text-align: center;
+            background: white;
+            padding: 50px 20px;
+            border-radius: 12px;
+        }
+
+        .empty h2 {
+            margin-bottom: 10px;
+        }
+
+        .shop-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 20px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <h1>🛒 Raj Mart</h1>
+
+    <nav>
+        <a href="/index.html">Home</a>
+        <a href="/products.html">Products</a>
+        <a href="/wishlist.html">❤️ Wishlist</a>
+        <a href="/cart.html">🛒 Cart</a>
+    </nav>
+
+</header>
+
+<div class="container">
+
+    <div class="title">
+        <h2>❤️ My Wishlist</h2>
+    </div>
+
+    <div id="wishlistContainer"></div>
+
+</div>
+
+<script>
+
+    function getWishlist() {
+
+        try {
+
+            return JSON.parse(
+                localStorage.getItem("wishlist")
+            ) || [];
+
+        } catch (error) {
+
+            return [];
+
+        }
+
+    }
+
+
+    function saveWishlist(wishlist) {
+
+        localStorage.setItem(
+            "wishlist",
+            JSON.stringify(wishlist)
+        );
+
+    }
+
+
+    function escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    function removeWishlist(productId) {
+
+        let wishlist = getWishlist();
+
+        wishlist = wishlist.filter(
+            product => Number(product.id) !== Number(productId)
+        );
+
+        saveWishlist(wishlist);
+
+        loadWishlist();
+
+    }
+
+
+    function addToCart(productId) {
+
+        const wishlist = getWishlist();
+
+        const product = wishlist.find(
+            item => Number(item.id) === Number(productId)
+        );
+
+        if (!product) {
+            return;
+        }
+
+        let cart = [];
+
+        try {
+
+            cart =
+                JSON.parse(
+                    localStorage.getItem("cart")
+                ) || [];
+
+        } catch (error) {
+
+            cart = [];
+
+        }
+
+        const existingProduct = cart.find(
+            item => Number(item.id) === Number(product.id)
+        );
+
+        if (existingProduct) {
+
+            existingProduct.quantity =
+                Number(existingProduct.quantity || 0) + 1;
+
+        } else {
+
+            cart.push({
+
+                id: Number(product.id),
+
+                name: product.name,
+
+                price: Number(product.price || 0),
+
+                image:
+                    product.image ||
+                    product.image_url ||
+                    "",
+
+                quantity: 1
+
+            });
+
+        }
+
+        localStorage.setItem(
+            "cart",
+            JSON.stringify(cart)
+        );
+
+        alert("Product added to cart! 🛒");
+
+    }
+
+
+    function loadWishlist() {
+
+        const container =
+            document.getElementById(
+                "wishlistContainer"
+            );
+
+        const wishlist = getWishlist();
+
+        if (wishlist.length === 0) {
+
+            container.innerHTML = `
+
+            <div class="empty">
+
+                <h2>❤️ Your Wishlist is Empty</h2>
+
+                <p>
+                    You haven't added any products
+                    to your wishlist yet.
+                </p>
+
+                <a
+                    class="shop-btn"
+                    href="/products.html"
+                >
+                    Browse Products
+                </a>
+
+            </div>
+
+        `;
+
+            return;
+
+        }
+
+
+        let html = "";
+
+        wishlist.forEach(product => {
+
+            const image =
+                product.image ||
+                product.image_url ||
+                "";
+
+            const stock =
+                Number(
+                    product.stock ??
+                    product.quantity ??
+                    0
+                );
+
+
+            html += `
+
+            <div class="card">
+
+                ${
+                image
+
+                    ?
+
+                    `<img
+                        src="${escapeHtml(image)}"
+                        alt="${escapeHtml(product.name)}"
+                    >`
+
+                    :
+
+                    `<div class="no-image">
+                        No Image
+                    </div>`
+            }
+
+
+                <h3>
+                    ${escapeHtml(product.name)}
+                </h3>
+
+
+                <div class="price">
+                    ₹${Number(product.price || 0).toLocaleString("en-IN")}
+                </div>
+
+
+                <div class="stock">
+
+                    ${
+                stock > 0
+
+                    ?
+
+                    `🟢 In Stock (${stock})`
+
+                    :
+
+                    `🔴 Out of Stock`
+            }
+
+                </div>
+
+
+                <div class="buttons">
+
+                    ${
+                stock > 0
+
+                    ?
+
+                    `<button
+                            class="cart-btn"
+                            onclick="addToCart(${Number(product.id)})"
+                        >
+                            🛒 Add to Cart
+                        </button>`
+
+                    :
+
+                    `<button
+                            class="cart-btn"
+                            disabled
+                        >
+                            Out of Stock
+                        </button>`
+            }
+
+
+                    <button
+                        class="remove-btn"
+                        onclick="removeWishlist(${Number(product.id)})"
+                    >
+                        Remove
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+        });
+
+
+        container.innerHTML = `
+
+        <div class="wishlist-grid">
+
+            ${html}
+
+        </div>
+
+    `;
+
+    }
+
+
+    loadWishlist();
+
+</script>
+
+</body>
+</html>

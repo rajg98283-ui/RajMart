@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raj Mart - Register</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #334155;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+        }
+
+        .password-box {
+            position: relative;
+        }
+
+        .password-box input {
+            padding-right: 45px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 9px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .roles {
+            display: flex;
+            gap: 10px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #cbd5e1;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .role-btn.active {
+            border-color: #2563eb;
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .strength {
+            margin-top: 8px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            width: 0%;
+            height: 100%;
+            background: #2563eb;
+            transition: width 0.2s;
+        }
+
+        .password-status {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .create-btn {
+            width: 100%;
+            margin-top: 25px;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .create-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .create-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #64748b;
+        }
+
+        .login-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="register-container">
+
+    <div class="logo">RAJ MART</div>
+
+    <div class="subtitle">
+        Create your account
+    </div>
+
+    <form id="registerForm">
+
+        <label for="name">Full Name</label>
+        <input
+                type="text"
+                id="name"
+                placeholder="Enter your name"
+                required
+        >
+
+        <label for="email">Email</label>
+        <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+                required
+        >
+
+        <label>Choose Role</label>
+
+        <div class="roles">
+            <button
+                    type="button"
+                    id="customerRole"
+                    class="role-btn active"
+                    onclick="selectRole('BUYER')"
+            >
+                Customer
+            </button>
+
+            <button
+                    type="button"
+                    id="sellerRole"
+                    class="role-btn"
+                    onclick="selectRole('SELLER')"
+            >
+                Seller
+            </button>
+        </div>
+
+        <label for="password">Password</label>
+
+        <div class="password-box">
+            <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter password"
+                    oninput="checkPassword()"
+                    required
+            >
+
+            <button
+                    type="button"
+                    class="password-toggle"
+                    onclick="togglePassword('password', this)"
+            >
+                👁️
+            </button>
+        </div>
+
+        <div class="strength">
+            <div id="strengthBar" class="strength-bar"></div>
+        </div>
+
+        <div id="passwordStatus" class="password-status">
+            Use at least 6 characters.
+        </div>
+
+        <label for="confirmPassword">Confirm Password</label>
+
+        <div class="password-box">
+            <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirm password"
+                    required
+            >
+
+            <button
+                    type="button"
+                    class="password-toggle"
+                    onclick="togglePassword('confirmPassword', this)"
+            >
+                👁️
+            </button>
+        </div>
+
+        <button
+                type="submit"
+                id="createBtn"
+                class="create-btn"
+        >
+            Create Account
+        </button>
+
+        <div id="message" class="message"></div>
+
+    </form>
+
+    <div class="login-link">
+        Already have an account?
+        <a href="/login.html">Login</a>
+    </div>
+
+</div>
+
+
+<script>
+    console.log("RAJMART REGISTER JS LOADED");
+
+    let selectedRole = "BUYER";
+
+
+    function selectRole(role) {
+
+        selectedRole = role;
+
+        document.getElementById("customerRole")
+            .classList.toggle("active", role === "BUYER");
+
+        document.getElementById("sellerRole")
+            .classList.toggle("active", role === "SELLER");
+    }
+
+
+    function togglePassword(id, button) {
+
+        const input = document.getElementById(id);
+
+        if (input.type === "password") {
+
+            input.type = "text";
+            button.textContent = "🙈";
+
+        } else {
+
+            input.type = "password";
+            button.textContent = "👁️";
+        }
+    }
+
+
+    function checkPassword() {
+
+        const password =
+            document.getElementById("password").value;
+
+        const bar =
+            document.getElementById("strengthBar");
+
+        const status =
+            document.getElementById("passwordStatus");
+
+
+        if (!password) {
+
+            bar.style.width = "0%";
+            status.textContent = "Use at least 6 characters.";
+
+            return;
+        }
+
+
+        let score = 0;
+
+        if (password.length >= 6) score++;
+        if (password.length >= 10) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[0-9]/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+
+
+        bar.style.width =
+            Math.min(score * 20, 100) + "%";
+
+
+        if (score <= 1) {
+
+            status.textContent = "Weak password";
+
+        } else if (score <= 3) {
+
+            status.textContent = "Medium password";
+
+        } else {
+
+            status.textContent = "Strong password";
+        }
+    }
+
+
+    function showMessage(text, type) {
+
+        const box =
+            document.getElementById("message");
+
+        box.textContent = text;
+
+        box.className = "message " + type;
+    }
+
+
+    document
+        .getElementById("registerForm")
+        .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            console.log("REGISTER FUNCTION STARTED");
+
+
+            const name =
+                document.getElementById("name").value.trim();
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+            const confirmPassword =
+                document.getElementById("confirmPassword").value;
+
+            const button =
+                document.getElementById("createBtn");
+
+
+            if (!name || !email || !password || !confirmPassword) {
+
+                showMessage(
+                    "Please fill in all fields.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (password.length < 6) {
+
+                showMessage(
+                    "Password must contain at least 6 characters.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (password !== confirmPassword) {
+
+                showMessage(
+                    "Passwords do not match.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            button.disabled = true;
+
+            button.textContent = "Creating Account...";
+
+
+            try {
+
+                console.log("SENDING REGISTER REQUEST");
+
+
+                const response = await fetch(
+                    "/api/users/register",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            name: name,
+
+                            email: email,
+
+                            password: password,
+
+                            role: selectedRole
+                        })
+                    }
+                );
+
+
+                console.log(
+                    "SERVER RESPONSE:",
+                    response.status
+                );
+
+
+                const data =
+                    await response.json();
+
+
+                console.log(
+                    "SERVER DATA:",
+                    data
+                );
+
+
+                if (data.success) {
+
+                    showMessage(
+                        "Account created successfully. Redirecting to login...",
+                        "success"
+                    );
+
+
+                    setTimeout(function() {
+
+                        window.location.href =
+                            "/login.html";
+
+                    }, 1200);
+
+
+                } else {
+
+                    showMessage(
+                        data.message ||
+                        "Registration failed.",
+                        "error"
+                    );
+
+
+                    button.disabled = false;
+
+                    button.textContent =
+                        "Create Account";
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "REGISTER ERROR:",
+                    error
+                );
+
+
+                showMessage(
+                    "Unable to connect to Raj Mart server.",
+                    "error"
+                );
+
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Create Account";
+            }
+
+        });
+
+
+    console.log("RAJMART REGISTER JS READY");
+
+</script>
+
+</body>
+</html>
