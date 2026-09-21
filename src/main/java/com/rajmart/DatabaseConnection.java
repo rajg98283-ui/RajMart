@@ -9,47 +9,48 @@ public class DatabaseConnection {
 
         try {
 
-            String host = System.getenv("MYSQLHOST");
-            String port = System.getenv("MYSQLPORT");
-            String database = System.getenv("MYSQLDATABASE");
-            String user = System.getenv("MYSQLUSER");
-            String password = System.getenv("MYSQLPASSWORD");
+            // Render PostgreSQL DATABASE_URL
+            String databaseUrl = System.getenv("DATABASE_URL");
 
-            String url =
-                    "jdbc:mysql://" + host + ":" + port + "/" + database
-                            + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+            System.out.println("========== RENDER DATABASE TEST ==========");
 
-            System.out.println("========== DB TEST ==========");
-            System.out.println("DATABASE HOST = " + host);
-            System.out.println("DATABASE = " + database);
-            System.out.println("DATABASE USER = " + user);
-            System.out.println(
-                    "PASSWORD SET: " +
-                            (password != null && !password.isBlank())
-            );
+            if (databaseUrl == null || databaseUrl.isBlank()) {
 
-            if (host == null || port == null ||
-                    database == null || user == null ||
-                    password == null || password.isBlank()) {
+                System.out.println("DATABASE_URL = NOT FOUND");
+                System.out.println("ERROR: Render DATABASE_URL is missing.");
 
-                System.out.println("ERROR: Railway MySQL variables are missing.");
                 return null;
             }
 
+            System.out.println("DATABASE_URL = FOUND");
+
+            // Convert Render PostgreSQL URL
+            // postgresql://...
+            //        ↓
+            // jdbc:postgresql://...
+
+            if (databaseUrl.startsWith("postgresql://")) {
+
+                databaseUrl = databaseUrl.replaceFirst(
+                        "^postgresql://",
+                        "jdbc:postgresql://"
+                );
+            }
+
+            // PostgreSQL connection
             Connection connection =
-                    DriverManager.getConnection(
-                            url,
-                            user,
-                            password
-                    );
+                    DriverManager.getConnection(databaseUrl);
 
             System.out.println("DATABASE CONNECTION SUCCESS!");
+            System.out.println("==========================================");
 
             return connection;
 
         } catch (Exception e) {
 
-            System.out.println("DATABASE CONNECTION ERROR!");
+            System.out.println("DATABASE CONNECTION FAILED!");
+            System.out.println("==========================================");
+
             e.printStackTrace();
 
             return null;

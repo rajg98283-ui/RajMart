@@ -18,7 +18,6 @@
     <artifactId>raj-mart</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <!-- Run directly with Spring Boot -->
     <packaging>jar</packaging>
 
     <properties>
@@ -27,16 +26,17 @@
 
     <dependencies>
 
-        <!-- Spring Boot Web + Embedded Tomcat -->
+        <!-- Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- MySQL -->
+        <!-- PostgreSQL for Render -->
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- HikariCP -->
