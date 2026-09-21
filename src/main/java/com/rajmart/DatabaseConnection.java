@@ -5,67 +5,54 @@ import java.sql.DriverManager;
 
 public class DatabaseConnection {
 
-
-    private static final String URL =
-            "jdbc:mysql://localhost:3306/rajmart";
-
-    private static final String USER = "root";
-
     public static Connection getConnection() {
 
         try {
 
-            String password =
-                    System.getenv("RAJMART_DB_PASSWORD");
+            String host = System.getenv("MYSQLHOST");
+            String port = System.getenv("MYSQLPORT");
+            String database = System.getenv("MYSQLDATABASE");
+            String user = System.getenv("MYSQLUSER");
+            String password = System.getenv("MYSQLPASSWORD");
+
+            String url =
+                    "jdbc:mysql://" + host + ":" + port + "/" + database
+                            + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
             System.out.println("========== DB TEST ==========");
-
-            System.out.println(
-                    "DATABASE URL = " + URL
-            );
-
-            System.out.println(
-                    "DATABASE USER = " + USER
-            );
-
+            System.out.println("DATABASE HOST = " + host);
+            System.out.println("DATABASE = " + database);
+            System.out.println("DATABASE USER = " + user);
             System.out.println(
                     "PASSWORD SET: " +
                             (password != null && !password.isBlank())
             );
 
-            if (password == null || password.isBlank()) {
+            if (host == null || port == null ||
+                    database == null || user == null ||
+                    password == null || password.isBlank()) {
 
-                System.out.println(
-                        "ERROR: RAJMART_DB_PASSWORD is missing."
-                );
-
+                System.out.println("ERROR: Railway MySQL variables are missing.");
                 return null;
             }
 
             Connection connection =
                     DriverManager.getConnection(
-                            URL,
-                            USER,
+                            url,
+                            user,
                             password
                     );
 
-            System.out.println(
-                    "DATABASE CONNECTION SUCCESS!"
-            );
+            System.out.println("DATABASE CONNECTION SUCCESS!");
 
             return connection;
 
         } catch (Exception e) {
 
-            System.out.println(
-                    "DATABASE CONNECTION ERROR!"
-            );
-
+            System.out.println("DATABASE CONNECTION ERROR!");
             e.printStackTrace();
 
             return null;
         }
     }
-
-
 }
