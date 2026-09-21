@@ -9,25 +9,19 @@ public class DatabaseConnection {
 
         try {
 
-            // Render PostgreSQL DATABASE_URL
             String databaseUrl = System.getenv("DATABASE_URL");
 
             System.out.println("========== RENDER DATABASE TEST ==========");
 
+            System.out.println("DATABASE_URL SET: " +
+                    (databaseUrl != null && !databaseUrl.isBlank()));
+
             if (databaseUrl == null || databaseUrl.isBlank()) {
 
-                System.out.println("DATABASE_URL = NOT FOUND");
-                System.out.println("ERROR: Render DATABASE_URL is missing.");
+                System.out.println("ERROR: DATABASE_URL is missing!");
 
                 return null;
             }
-
-            System.out.println("DATABASE_URL = FOUND");
-
-            // Convert Render PostgreSQL URL
-            // postgresql://...
-            //        ↓
-            // jdbc:postgresql://...
 
             if (databaseUrl.startsWith("postgresql://")) {
 
@@ -37,19 +31,26 @@ public class DatabaseConnection {
                 );
             }
 
-            // PostgreSQL connection
+            System.out.println("Connecting to Render PostgreSQL...");
+
+            Class.forName("org.postgresql.Driver");
+
             Connection connection =
                     DriverManager.getConnection(databaseUrl);
 
             System.out.println("DATABASE CONNECTION SUCCESS!");
-            System.out.println("==========================================");
 
             return connection;
 
         } catch (Exception e) {
 
-            System.out.println("DATABASE CONNECTION FAILED!");
-            System.out.println("==========================================");
+            System.out.println("========== DATABASE CONNECTION ERROR ==========");
+
+            System.out.println("ERROR TYPE: " +
+                    e.getClass().getName());
+
+            System.out.println("ERROR MESSAGE: " +
+                    e.getMessage());
 
             e.printStackTrace();
 
