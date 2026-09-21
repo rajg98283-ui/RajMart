@@ -2,6 +2,7 @@ package com.rajmart;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 
 public class DatabaseConnection {
 
@@ -17,14 +18,11 @@ public class DatabaseConnection {
                     (databaseUrl != null && !databaseUrl.isBlank()));
 
             if (databaseUrl == null || databaseUrl.isBlank()) {
-
                 System.out.println("ERROR: DATABASE_URL is missing!");
-
                 return null;
             }
 
             if (databaseUrl.startsWith("postgresql://")) {
-
                 databaseUrl = databaseUrl.replaceFirst(
                         "^postgresql://",
                         "jdbc:postgresql://"
@@ -39,6 +37,23 @@ public class DatabaseConnection {
                     DriverManager.getConnection(databaseUrl);
 
             System.out.println("DATABASE CONNECTION SUCCESS!");
+
+            // Create users table automatically
+            String createUsersTable = """
+                    CREATE TABLE IF NOT EXISTS users (
+                        id SERIAL PRIMARY KEY,
+                        name VARCHAR(100) NOT NULL,
+                        email VARCHAR(150) UNIQUE NOT NULL,
+                        password_hash VARCHAR(255) NOT NULL,
+                        role VARCHAR(20) NOT NULL
+                    )
+                    """;
+
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(createUsersTable);
+            statement.close();
+
+            System.out.println("USERS TABLE READY!");
 
             return connection;
 
