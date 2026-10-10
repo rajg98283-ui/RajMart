@@ -1,0 +1,15 @@
+# Sprint Retrospective (RETRO.md)
+
+| Sprint / Week | Dates | What Worked | What Didn't | Change for Next Sprint |
+|---|---|---|---|---|
+| **Week 1** | Jul 27 – Aug 2 | Clean JDBC DAO layer using HikariCP and PreparedStatement. BCrypt authentication and role model. | H2 in-memory URL syntax nuances across test suites. | Added idempotent DDL (`DROP TABLE IF EXISTS ... CASCADE`) to ensure clean restarts. |
+| **Week 2** | Aug 3 – Aug 9 | Core shopping flow (browse, search, cart, mock payment checkout). Strict transactional isolation on stock deduction. | Initial pagination needed consistent total item counting. | Standardized search query to return item count and total pages. |
+| **Week 3** | Aug 10 – Aug 16 | Seller listing dashboard with image URL previews and category tagging. DTO separation completely isolated from entities. | Initial entity exposure risked leaking password hashes. | Created strict `UserResponse` and DTO mapping layer. |
+| **Week 4** | Aug 17 – Aug 23 | Incoming seller orders and Admin moderation panel. Server-side role protection in `AuthFilter`. | Client-side only role checks could be circumvented. | Enforced server-side session authentication on all private API endpoints. |
+| **Week 5** | Aug 24 – Aug 30 | Order status lifecycle workflow (PENDING → CONFIRMED → PACKED → SHIPPED → DELIVERED). Inventory replenishment on cancellation. | Edge case: Cancelling already delivered orders. | Implemented `OrderStatus.canTransitionTo()` state machine. |
+| **Week 6** | Aug 31 – Sep 6 | Verified buyer review system with 1-5 star ratings. O1 Wishlist with save-for-later and move-to-cart. | Unverified buyers submitting duplicate product reviews. | Enforced database unique constraint on `(product_id, buyer_id)` and checked order history. |
+| **Week 7** | Sep 7 – Sep 13 | Comprehensive unit and integration test coverage across all layers (38 automated tests, 100% pass rate). | Long test runs when downloading dependencies. | Configured Surefire parallelization and local artifact caching. |
+| **Week 8** | Sep 14 – Sep 20 | Multi-stage Docker packaging, non-root user execution, and environment-driven configuration for MySQL. | Hardcoded database credentials. | Separated profiles into `application-dev.properties` and `application-prod.properties`. |
+| **Week 9** | Sep 21 – Sep 27 | AI Chatbot backend with `ChatProvider` interface, `MockChatProvider` domain knowledge, and `GeminiChatProvider`. | External AI rate limits and network latency. | Added sliding window `RateLimiter` (10 msg/min) and 5-second API timeouts. |
+| **Week 10** | Sep 28 – Oct 4 | Floating AI chat widget with suggestions chips, typing animation, and responsive layout across desktop and mobile. | Chat window overlaying footer buttons on mobile screens. | Added mobile-responsive media queries and minimize button. |
+| **Week 11** | Oct 5 – Oct 10 | Final regression pass, documentation, architecture diagrams (D1 ER, D2 Use Case, D3 Sequence), rehearsed demo. | Minor CSS layout quirks on small screens. | Polished responsive styling, verified zero console errors, zero broken buttons. |
